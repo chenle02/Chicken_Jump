@@ -26,22 +26,18 @@ let isGameOver = false;
 const game = new Phaser.Game(config);
 
 function preload () {
-    // No assets to load for the prototype
+    // Load the new chicken SVG asset
+    this.load.svg('chicken', 'assets/chicken.svg');
 }
 
 function create () {
     // Create the ground (visual only)
     this.add.rectangle(400, 580, 800, 40, 0x00ff00);
 
-    // Create the player (chicken)
-    player = this.physics.add.sprite(400, 550, null);
+    // Create the player using the 'chicken' image
+    player = this.physics.add.sprite(400, 550, 'chicken');
+    player.setScale(0.5); // Scale the SVG down
     player.setCollideWorldBounds(true);
-    // Use a graphics object to create a simple white square for the player
-    let playerGraphics = this.make.graphics({x: -15, y: -15});
-    playerGraphics.fillStyle(0xffffff);
-    playerGraphics.fillRect(0, 0, 30, 30);
-    player.setTexture(playerGraphics.generateTexture('player', 30, 30));
-    playerGraphics.destroy();
     player.body.allowGravity = false;
 
 
@@ -86,7 +82,7 @@ function update () {
 
     // Clean up obstacles that are off-screen
     obstacles.getChildren().forEach(obstacle => {
-        if (obstacle.y > config.height) {
+        if (obstacle.y > config.height + 50) { // Give some buffer
             obstacle.destroy();
         }
     });
@@ -106,7 +102,13 @@ function spawnObstacle() {
     obstacle.setTexture(obstacleGraphics.generateTexture('obstacle_falling', 40, 20));
     obstacleGraphics.destroy();
 
+    // Set vertical and new horizontal velocity
     obstacle.setVelocityY(200);
+    obstacle.setVelocityX(Phaser.Math.Between(-150, 150));
+
+    // Make obstacles bounce off the screen edges
+    obstacle.setCollideWorldBounds(true);
+    obstacle.setBounce(1);
 }
 
 function hitObstacle(player, obstacle) {
