@@ -2,28 +2,25 @@
 
 This project is for the development of a game called "Chicken Jump". The game is about a chicken trying to get back to its barn, navigating through various levels and obstacles.
 
-**Game Concept:**
-
-*   **Objective:** The player controls a chicken that needs to reach its barn.
-*   **Levels & Obstacles:** The game has multiple levels with increasing difficulty. Obstacles include rivers, roads, foxes, and a farmer in a truck.
-*   **Scoring & Items:** Players can collect corn to gain points and find hidden survival items.
-*   **Lives:** The chicken has three lives. Losing all lives ends the game.
-*   **Time Limit:** The chicken must reach the barn before night to avoid being eaten by a fox and before the farmer collects the chickens.
-*   **High Score & Store:** The game features a hall of fame for high scores and a store where players can spend points on items like extra lives.
-
-## Key Files
-
-*   `README.md`: Contains a description of the game concept, including the objective, levels, obstacles, and other features.
-
 ## Development Plan
 
 *   **Platform:** Web (JavaScript)
 *   **Hosting:** GitHub & GitHub Pages
-*   **Game Engine/Library:** [TODO: Decide on a library, e.g., Phaser, PixiJS, or vanilla JS]
-*   **Project Structure:** [TODO: Define file structure]
-*   **Build Tools:** [TODO: Decide on a bundler if needed, e.g., Vite]
-*   **Assets:** [TODO: Plan for images, sounds, etc.]
+*   **Game Engine/Library:** Phaser 3
+*   **Project Structure:** A simple `index.html` with a `game.js` file.
+*   **Build Tools:** None for the prototype. Phaser will be loaded from a CDN.
+*   **Assets:** Placeholder graphics will be used for the prototype.
 
 ## Roadmap (MVP)
 
-*   [TODO: Define initial features for a first version]
+### MVP Features
+1.  **Playable Character:** A single chicken character controlled by the player.
+2.  **Core Movement:** The chicken can move left, right, and jump.
+3.  **One Level:** A single, non-scrolling screen.
+4.  **One Obstacle:** A simple, repeating obstacle (e.g., a car moving horizontally).
+5.  **Win/Lose Condition:** The player wins by reaching a "safe zone" at the top of the screen and loses if hit by the obstacle.
+
+### Core Mechanics
+*   **Player Control:** Keyboard input for movement (left, right, up for jump).
+*   **Collision:** The game will detect collisions between the chicken and the obstacle. A collision results in a game over.
+*   **Goal:** Reach the designated finish line.
