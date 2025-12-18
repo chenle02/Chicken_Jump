@@ -29,6 +29,7 @@ function preload () {
     // Load image assets
     this.load.svg('background', 'assets/background.svg');
     this.load.svg('chicken', 'assets/chicken.svg');
+    this.load.svg('fox_clown', 'assets/fox_clown.svg'); // Load the new fox clown asset
 }
 
 function create () {
@@ -97,14 +98,8 @@ function spawnObstacle() {
         return;
     }
     const x = Phaser.Math.Between(0, config.width);
-    const obstacle = obstacles.create(x, 0, null);
-
-    // Use a graphics object to create a simple red rectangle for the obstacle
-    let obstacleGraphics = this.make.graphics({x: -20, y: -10});
-    obstacleGraphics.fillStyle(0xff0000);
-    obstacleGraphics.fillRect(0, 0, 40, 20);
-    obstacle.setTexture(obstacleGraphics.generateTexture('obstacle_falling', 40, 20));
-    obstacleGraphics.destroy();
+    const obstacle = obstacles.create(x, 0, 'fox_clown'); // Use the fox_clown image
+    obstacle.setScale(0.5); // Scale the SVG down
 
     // Set vertical and new horizontal velocity
     obstacle.setVelocityY(200);
