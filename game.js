@@ -123,9 +123,9 @@ function spawnObstacle() {
     const obstacle = obstacles.create(x, 0, 'fox_clown'); // Use the fox_clown image
     obstacle.setScale(0.5); // Scale the SVG down
 
-    // Set vertical and new horizontal velocity
-    obstacle.setVelocityY(200);
-    obstacle.setVelocityX(Phaser.Math.Between(-150, 150));
+    // Set vertical and new horizontal velocity (slower)
+    obstacle.setVelocityY(150); // Reduced from 200
+    obstacle.setVelocityX(Phaser.Math.Between(-100, 100)); // Reduced range from -150 to 150
 
     // Make obstacles bounce off the screen edges
     obstacle.setCollideWorldBounds(true);
