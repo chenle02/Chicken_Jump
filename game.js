@@ -16,18 +16,20 @@ const config = {
     }
 };
 
-// --- New/Modified Global Variables ---
+// --- Global Variables ---
 let player;
 let cursors;
 let obstacles;
-let gifts; // For power-ups
+let gifts;
+let bombs; // New group for bombs
 let score;
 let scoreText;
 let lives;
-let hearts; // UI display for lives
+let hearts;
 let isGameOver;
 let isInvincible;
 let virtualKeys;
+const MAX_OBSTACLES = 10; // Max number of obstacles on screen
 
 const game = new Phaser.Game(config);
 
@@ -35,8 +37,9 @@ function preload () {
     this.load.svg('background', 'assets/background.svg');
     this.load.svg('chicken', 'assets/chicken.svg');
     this.load.svg('fox_clown', 'assets/fox_clown.svg');
-    this.load.svg('heart', 'assets/heart.svg'); // New heart asset
-    this.load.svg('gift', 'assets/gift.svg');   // New gift asset
+    this.load.svg('heart', 'assets/heart.svg');
+    this.load.svg('gift', 'assets/gift.svg');
+    this.load.svg('bomb', 'assets/bomb.svg'); // New bomb asset
 }
 
 function create () {
@@ -61,13 +64,14 @@ function create () {
     // --- Player Setup ---
     player = this.physics.add.sprite(400, 550, 'chicken');
     player.setScale(0.5);
-    player.setCircle(player.width / 4, player.width / 4, player.height / 4); // Improved hitbox
+    player.setCircle(player.width / 4, player.width / 4, player.height / 4);
     player.setCollideWorldBounds(true);
     player.body.allowGravity = false;
 
     // --- Physics Groups ---
     obstacles = this.physics.add.group();
     gifts = this.physics.add.group();
+    bombs = this.physics.add.group(); // New bombs group
 
     // --- Input Setup ---
     cursors = this.input.keyboard.createCursorKeys();
@@ -78,11 +82,13 @@ function create () {
 
     // --- Colliders ---
     this.physics.add.collider(player, obstacles, hitObstacle, null, this);
-    this.physics.add.overlap(player, gifts, collectGift, null, this); // Overlap for collection
+    this.physics.add.overlap(player, gifts, collectGift, null, this);
+    this.physics.add.overlap(player, bombs, collectBomb, null, this); // New bomb collider
 
     // --- Timed Events ---
     this.time.addEvent({ delay: 1000, callback: spawnObstacle, callbackScope: this, loop: true });
-    this.time.addEvent({ delay: 15000, callback: spawnGift, callbackScope: this, loop: true }); // Spawn gifts less often
+    this.time.addEvent({ delay: 15000, callback: spawnGift, callbackScope: this, loop: true });
+    this.time.addEvent({ delay: 25000, callback: spawnBomb, callbackScope: this, loop: true }); // New bomb spawner
 }
 
 function update () {
@@ -104,9 +110,15 @@ function update () {
     scoreText.setText('Score: ' + score);
     obstacles.getChildren().forEach(obstacle => { if (obstacle.y > config.height + 50) { obstacle.destroy(); } });
     gifts.getChildren().forEach(gift => { if (gift.y > config.height + 50) { gift.destroy(); } });
+    bombs.getChildren().forEach(bomb => { if (bomb.y > config.height + 50) { bomb.destroy(); } });
 }
 
 function spawnObstacle() {
+    // --- Obstacle Limit ---
+    if (obstacles.countActive(true) >= MAX_OBSTACLES) {
+        return;
+    }
+
     if (isGameOver) { return; }
     const speedMultiplier = Math.min(2.5, 1 + Math.floor(score / 2000) * 0.25);
     const verticalSpeed = 150 * speedMultiplier;
@@ -115,7 +127,7 @@ function spawnObstacle() {
     const x = Phaser.Math.Between(0, config.width);
     const obstacle = obstacles.create(x, 0, 'fox_clown');
     obstacle.setScale(0.5);
-    obstacle.setCircle(obstacle.width / 4, obstacle.width / 4, obstacle.height / 4); // Improved hitbox
+    obstacle.setCircle(obstacle.width / 4, obstacle.width / 4, obstacle.height / 4);
 
     obstacle.setVelocityY(verticalSpeed);
     obstacle.setVelocityX(Phaser.Math.Between(-horizontalSpeedRange, horizontalSpeedRange));
@@ -123,16 +135,23 @@ function spawnObstacle() {
     obstacle.setBounce(1);
 }
 
-// --- New Function: spawnGift ---
 function spawnGift() {
     if (isGameOver) { return; }
     const x = Phaser.Math.Between(0, config.width);
     const gift = gifts.create(x, 0, 'gift');
     gift.setScale(0.6);
-    gift.setVelocityY(100); // Gifts fall slowly
+    gift.setVelocityY(100);
 }
 
-// --- New Function: collectGift ---
+// --- New Function: spawnBomb ---
+function spawnBomb() {
+    if (isGameOver) { return; }
+    const x = Phaser.Math.Between(0, config.width);
+    const bomb = bombs.create(x, 0, 'bomb');
+    bomb.setScale(0.6);
+    bomb.setVelocityY(100);
+}
+
 function collectGift(player, gift) {
     gift.destroy();
     if (lives < 3) {
@@ -140,6 +159,12 @@ function collectGift(player, gift) {
         const heart = hearts.create(config.width - 40 - ((lives - 1) * 45), 35, 'heart');
         heart.setScale(0.08).setScrollFactor(0);
     }
+}
+
+// --- New Function: collectBomb ---
+function collectBomb(player, bomb) {
+    bomb.destroy();
+    obstacles.clear(true, true); // Destroy all obstacles
 }
 
 function handleTouchStart(pointer) {
@@ -152,10 +177,9 @@ function handleTouchEnd() {
     virtualKeys.right = false;
 }
 
-// --- Reworked Function: hitObstacle ---
 function hitObstacle(player, obstacle) {
     if (isInvincible) {
-        return; // Player can't be hit
+        return;
     }
 
     lives--;
@@ -179,9 +203,8 @@ function hitObstacle(player, obstacle) {
     } else {
         // --- Invincibility Logic ---
         isInvincible = true;
-        obstacle.destroy(); // Destroy the obstacle that hit the player
+        obstacle.destroy();
 
-        // Blink tween to show invincibility
         this.tweens.add({
             targets: player,
             alpha: 0.5,
