@@ -31,8 +31,8 @@ function preload () {
     this.load.svg('background', 'assets/background.svg');
     this.load.svg('chicken', 'assets/chicken.svg');
     this.load.svg('fox_clown', 'assets/fox_clown.svg');
-    this.load.svg('arrow_left', 'assets/arrow_left.svg');
-    this.load.svg('arrow_right', 'assets/arrow_right.svg');
+    // Removed: this.load.svg('arrow_left', 'assets/arrow_left.svg');
+    // Removed: this.load.svg('arrow_right', 'assets/arrow_right.svg');
 }
 
 function create () {
@@ -54,22 +54,25 @@ function create () {
     // Set up keyboard input
     cursors = this.input.keyboard.createCursorKeys();
 
-    // Set up on-screen controls
+    // Set up virtual keys for touch input
     virtualKeys = { left: false, right: false };
-    const leftArrow = this.add.sprite(70, 530, 'arrow_left').setInteractive();
-    const rightArrow = this.add.sprite(180, 530, 'arrow_right').setInteractive();
 
-    leftArrow.setScale(0.8).setScrollFactor(0);
-    rightArrow.setScale(0.8).setScrollFactor(0);
+    // Removed: on-screen arrow sprites and their event listeners
+    // const leftArrow = this.add.sprite(70, 530, 'arrow_left').setInteractive();
+    // const rightArrow = this.add.sprite(180, 530, 'arrow_right').setInteractive();
+    // leftArrow.setScale(0.8).setScrollFactor(0);
+    // rightArrow.setScale(0.8).setScrollFactor(0);
+    // leftArrow.on('pointerdown', () => { virtualKeys.left = true; });
+    // leftArrow.on('pointerup', () => { virtualKeys.left = false; });
+    // leftArrow.on('pointerout', () => { virtualKeys.left = false; });
+    // rightArrow.on('pointerdown', () => { virtualKeys.right = true; });
+    // rightArrow.on('pointerup', () => { virtualKeys.right = false; });
+    // rightArrow.on('pointerout', () => { virtualKeys.right = false; });
 
-    leftArrow.on('pointerdown', () => { virtualKeys.left = true; });
-    leftArrow.on('pointerup', () => { virtualKeys.left = false; });
-    leftArrow.on('pointerout', () => { virtualKeys.left = false; });
-
-    rightArrow.on('pointerdown', () => { virtualKeys.right = true; });
-    rightArrow.on('pointerup', () => { virtualKeys.right = false; });
-    rightArrow.on('pointerout', () => { virtualKeys.right = false; });
-
+    // Global touch event listeners for screen halves
+    this.input.on('pointerdown', handleTouchStart, this);
+    this.input.on('pointerup', handleTouchEnd, this);
+    this.input.on('pointerout', handleTouchEnd, this); // In case pointer leaves screen while pressed
 
     // Collision detection between player and obstacles
     this.physics.add.collider(player, obstacles, hitObstacle, null, this);
@@ -127,6 +130,21 @@ function spawnObstacle() {
     // Make obstacles bounce off the screen edges
     obstacle.setCollideWorldBounds(true);
     obstacle.setBounce(1);
+}
+
+function handleTouchStart(pointer) {
+    if (pointer.x < config.width / 2) {
+        virtualKeys.left = true;
+        virtualKeys.right = false;
+    } else {
+        virtualKeys.left = false;
+        virtualKeys.right = true;
+    }
+}
+
+function handleTouchEnd() {
+    virtualKeys.left = false;
+    virtualKeys.right = false;
 }
 
 function hitObstacle(player, obstacle) {
