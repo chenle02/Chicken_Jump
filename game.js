@@ -36,7 +36,7 @@ const game = new Phaser.Game(config);
 function preload () {
     this.load.svg('background', 'assets/background.svg');
     this.load.svg('chicken', 'assets/chicken.svg');
-    this.load.svg('fox_clown', 'assets/fox_clown.svg');
+    this.load.svg('eagle', 'assets/eagle.svg'); // Load the new eagle asset
     this.load.svg('heart', 'assets/heart.svg');
     this.load.svg('gift', 'assets/gift.svg');
     this.load.svg('bomb', 'assets/bomb.svg'); // New bomb asset
@@ -82,6 +82,7 @@ function create () {
 
     // --- Colliders ---
     this.physics.add.collider(player, obstacles, hitObstacle, null, this);
+    this.physics.add.collider(obstacles, obstacles); // Make eagles bounce off each other
     this.physics.add.overlap(player, gifts, collectGift, null, this);
     this.physics.add.overlap(player, bombs, collectBomb, null, this); // New bomb collider
 
@@ -125,14 +126,14 @@ function spawnObstacle() {
     const horizontalSpeedRange = 100 * speedMultiplier;
 
     const x = Phaser.Math.Between(0, config.width);
-    const obstacle = obstacles.create(x, 0, 'fox_clown');
+    const obstacle = obstacles.create(x, 0, 'eagle'); // Use the eagle image
     obstacle.setScale(0.5);
     obstacle.setCircle(obstacle.width / 4, obstacle.width / 4, obstacle.height / 4);
 
     obstacle.setVelocityY(verticalSpeed);
     obstacle.setVelocityX(Phaser.Math.Between(-horizontalSpeedRange, horizontalSpeedRange));
     obstacle.setCollideWorldBounds(true);
-    obstacle.setBounce(1);
+    obstacle.setBounce(Phaser.Math.FloatBetween(0.8, 1.0)); // Randomize bounciness
 }
 
 function spawnGift() {
