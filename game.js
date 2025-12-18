@@ -122,8 +122,8 @@ function spawnObstacle() {
 
     if (isGameOver) { return; }
     const speedMultiplier = Math.min(2.5, 1 + Math.floor(score / 2000) * 0.25);
-    const verticalSpeed = 150 * speedMultiplier;
-    const horizontalSpeedRange = 100 * speedMultiplier;
+    const verticalSpeed = 250 * finalMultiplier; // Increased base speed from 100
+    const horizontalSpeedRange = 180 * finalMultiplier; // Increased base range from 70
 
     const x = Phaser.Math.Between(0, config.width);
     const obstacle = obstacles.create(x, 0, 'eagle'); // Use the eagle image
