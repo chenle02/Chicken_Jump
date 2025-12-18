@@ -26,11 +26,15 @@ let isGameOver = false;
 const game = new Phaser.Game(config);
 
 function preload () {
-    // Load the new chicken SVG asset
+    // Load image assets
+    this.load.svg('background', 'assets/background.svg');
     this.load.svg('chicken', 'assets/chicken.svg');
 }
 
 function create () {
+    // Add the background image first
+    this.add.image(400, 300, 'background');
+
     // Create the ground (visual only)
     this.add.rectangle(400, 580, 800, 40, 0x00ff00);
 
