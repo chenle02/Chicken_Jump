@@ -119,13 +119,24 @@ function spawnObstacle() {
     if (isGameOver) {
         return;
     }
+
+    // --- Speed Calculation ---
+    // Increase speed every 2000 points. Cap at a certain max speed.
+    const speedMultiplier = 1 + Math.floor(score / 2000) * 0.25;
+    const maxSpeedMultiplier = 2.5;
+    const finalMultiplier = Math.min(speedMultiplier, maxSpeedMultiplier);
+
+    const verticalSpeed = 150 * finalMultiplier;
+    const horizontalSpeedRange = 100 * finalMultiplier;
+    // --- End of Speed Calculation ---
+
     const x = Phaser.Math.Between(0, config.width);
     const obstacle = obstacles.create(x, 0, 'fox_clown'); // Use the fox_clown image
     obstacle.setScale(0.5); // Scale the SVG down
 
-    // Set vertical and new horizontal velocity (slower)
-    obstacle.setVelocityY(150); // Reduced from 200
-    obstacle.setVelocityX(Phaser.Math.Between(-100, 100)); // Reduced range from -150 to 150
+    // Set velocities based on score
+    obstacle.setVelocityY(verticalSpeed);
+    obstacle.setVelocityX(Phaser.Math.Between(-horizontalSpeedRange, horizontalSpeedRange));
 
     // Make obstacles bounce off the screen edges
     obstacle.setCollideWorldBounds(true);
