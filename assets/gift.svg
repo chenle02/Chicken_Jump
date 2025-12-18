@@ -1,0 +1,13 @@
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+    <!-- Box -->
+    <rect x="10" y="30" width="80" height="60" fill="#D32F2F"/>
+    <!-- Lid -->
+    <rect x="5" y="20" width="90" height="15" fill="#E53935"/>
+    <!-- Vertical Ribbon -->
+    <rect x="45" y="20" width="10" height="70" fill="#FFC107"/>
+    <!-- Horizontal Ribbon -->
+    <rect x="5" y="45" width="90" height="10" fill="#FFC107"/>
+    <!-- Bow -->
+    <path d="M 40 20 C 30 10, 30 0, 45 0 S 60 10, 50 20" fill="#FFC107"/>
+    <path d="M 60 20 C 70 10, 70 0, 55 0 S 40 10, 50 20" fill="#FFC107"/>
+</svg>
