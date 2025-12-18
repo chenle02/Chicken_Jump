@@ -19,9 +19,9 @@ const config = {
 let player;
 let cursors;
 let obstacles;
-let score = 0;
+let score;
 let scoreText;
-let isGameOver = false;
+let isGameOver;
 let virtualKeys; // To hold the state of on-screen buttons
 
 const game = new Phaser.Game(config);
@@ -36,6 +36,10 @@ function preload () {
 }
 
 function create () {
+    // Reset game state on scene start/restart
+    score = 0;
+    isGameOver = false;
+
     // Add the background image first
     this.add.image(400, 300, 'background');
 
@@ -163,4 +167,16 @@ function hitObstacle(player, obstacle) {
     player.setTint(0xff0000);
     isGameOver = true;
     this.add.text(300, 250, 'GAME OVER', { fontSize: '48px', fill: '#fff' });
+
+    // Add a replay button
+    const replayButton = this.add.text(350, 350, 'Replay', {
+        fontSize: '32px',
+        fill: '#0f0',
+        backgroundColor: '#333',
+        padding: { x: 10, y: 5 }
+    })
+    .setInteractive({ useHandCursor: true })
+    .on('pointerdown', () => this.scene.restart())
+    .on('pointerover', () => replayButton.setStyle({ fill: '#ff0' }))
+    .on('pointerout', () => replayButton.setStyle({ fill: '#0f0' }));
 }
