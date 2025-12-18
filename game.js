@@ -22,6 +22,7 @@ let obstacles;
 let score = 0;
 let scoreText;
 let isGameOver = false;
+let virtualKeys; // To hold the state of on-screen buttons
 
 const game = new Phaser.Game(config);
 
@@ -29,7 +30,9 @@ function preload () {
     // Load image assets
     this.load.svg('background', 'assets/background.svg');
     this.load.svg('chicken', 'assets/chicken.svg');
-    this.load.svg('fox_clown', 'assets/fox_clown.svg'); // Load the new fox clown asset
+    this.load.svg('fox_clown', 'assets/fox_clown.svg');
+    this.load.svg('arrow_left', 'assets/arrow_left.svg');
+    this.load.svg('arrow_right', 'assets/arrow_right.svg');
 }
 
 function create () {
@@ -45,12 +48,28 @@ function create () {
     player.setCollideWorldBounds(true);
     player.body.allowGravity = false;
 
-
     // Create the obstacles group
     obstacles = this.physics.add.group();
 
     // Set up keyboard input
     cursors = this.input.keyboard.createCursorKeys();
+
+    // Set up on-screen controls
+    virtualKeys = { left: false, right: false };
+    const leftArrow = this.add.sprite(70, 530, 'arrow_left').setInteractive();
+    const rightArrow = this.add.sprite(180, 530, 'arrow_right').setInteractive();
+
+    leftArrow.setScale(0.8).setScrollFactor(0);
+    rightArrow.setScale(0.8).setScrollFactor(0);
+
+    leftArrow.on('pointerdown', () => { virtualKeys.left = true; });
+    leftArrow.on('pointerup', () => { virtualKeys.left = false; });
+    leftArrow.on('pointerout', () => { virtualKeys.left = false; });
+
+    rightArrow.on('pointerdown', () => { virtualKeys.right = true; });
+    rightArrow.on('pointerup', () => { virtualKeys.right = false; });
+    rightArrow.on('pointerout', () => { virtualKeys.right = false; });
+
 
     // Collision detection between player and obstacles
     this.physics.add.collider(player, obstacles, hitObstacle, null, this);
@@ -72,10 +91,10 @@ function update () {
         return;
     }
 
-    // Player movement
-    if (cursors.left.isDown) {
+    // Player movement with keyboard OR on-screen controls
+    if (cursors.left.isDown || virtualKeys.left) {
         player.setVelocityX(-300);
-    } else if (cursors.right.isDown) {
+    } else if (cursors.right.isDown || virtualKeys.right) {
         player.setVelocityX(300);
     } else {
         player.setVelocityX(0);
