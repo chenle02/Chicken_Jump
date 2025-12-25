@@ -28,6 +28,7 @@ let lives;
 let hearts;
 let isGameOver;
 let isInvincible;
+let isJumping;
 let virtualKeys;
 const MAX_OBSTACLES = 10; // Max number of obstacles on screen
 
@@ -48,6 +49,7 @@ function create () {
     lives = 3;
     isGameOver = false;
     isInvincible = false;
+    isJumping = false;
 
     // --- World and UI Setup ---
     this.add.image(400, 300, 'background');
@@ -75,6 +77,7 @@ function create () {
 
     // --- Input Setup ---
     cursors = this.input.keyboard.createCursorKeys();
+    this.input.keyboard.on('keydown-SPACE', jump, this);
     virtualKeys = { left: false, right: false };
     this.input.on('pointerdown', handleTouchStart, this);
     this.input.on('pointerup', handleTouchEnd, this);
@@ -176,6 +179,28 @@ function handleTouchStart(pointer) {
 function handleTouchEnd() {
     virtualKeys.left = false;
     virtualKeys.right = false;
+}
+
+function jump() {
+    if (isJumping || isGameOver) {
+        return;
+    }
+
+    isJumping = true;
+
+    const jumpHeight = player.height * 3;
+    const jumpDuration = 500; // in ms
+
+    this.tweens.add({
+        targets: player,
+        y: player.y - jumpHeight,
+        duration: jumpDuration / 2,
+        ease: 'Power2',
+        yoyo: true,
+        onComplete: () => {
+            isJumping = false;
+        }
+    });
 }
 
 function hitObstacle(player, obstacle) {
